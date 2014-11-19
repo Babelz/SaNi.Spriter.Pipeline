@@ -54,6 +54,7 @@
     <Compile Include="SpriterImporter.cs" />
     <Compile Include="SpriterProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SpriterShadowData.cs" />
     <Compile Include="SpriterWriter.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 using Microsoft.Xna.Framework.Content.Pipeline;
+using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
 
 namespace SaNi.Spriter.Pipeline
@@ -34,7 +36,30 @@ namespace SaNi.Spriter.Pipeline
 
         protected override void Write(ContentWriter output, SpriterShadowData value)
         {
-            output.Write(0);
+            Console.WriteLine("joo");
+            XElement root = value.Document.Descendants("spriter_data").First();
+            // versio
+            output.Write(root.Attribute("scml_version").Value);
+            output.Write(root.Attribute("generator").Value);
+            output.Write(root.Attribute("generator_version").Value);
+            // foldereiden määrä
+            /*output.Write(value.Textures.Count);
+            // filujen määrä per folder
+            for (int i = 0; i < value.Textures.Count; i++)
+            {
+                output.Write(value.Textures[i].Count);
+            }*/
+
+            /*
+            // tekstuurit
+            for (int i = 0; i < value.Textures.Count; i++)
+            {
+                for (int j = 0; j < value.Textures[i].Count; j++)
+                {
+                    output.WriteRawObject<Texture2DContent>(value.Textures[i][j]);
+                }
+            }
+             * */
         }
     }
 }

@@ -13,7 +13,8 @@ namespace SaNi.Spriter.Pipeline
     {
         public override XDocument Import(string filename, ContentImporterContext context)
         {
-            return new XDocument();
+            XDocument doc = XDocument.Load(filename);
+            return doc;
         }
     }
 }

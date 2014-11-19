@@ -10,11 +10,6 @@ using Microsoft.Xna.Framework.Content.Pipeline.Processors;
 
 namespace SaNi.Spriter.Pipeline
 {
-
-    public class SpriterShadowData
-    {
-        
-    }
     /// <summary>
     /// This class will be instantiated by the XNA Framework Content Pipeline
     /// to apply custom processing to content data, converting an object of
@@ -31,7 +26,10 @@ namespace SaNi.Spriter.Pipeline
     {
         public override SpriterShadowData Process(XDocument input, ContentProcessorContext context)
         {
-            return new SpriterShadowData();
+            return new SpriterShadowData()
+            {
+                Document = input
+            };
         }
     }
 }
