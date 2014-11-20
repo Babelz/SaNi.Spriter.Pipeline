@@ -139,7 +139,98 @@ namespace SaNi.Spriter.Pipeline
                 output.Write(timelines.Count);
 
                 WriteMainlineKeys(output, mainlineKeys);
+                WriteTimelines(output, timelines);
 
+
+            }
+        }
+
+        private void WriteTimelines(ContentWriter output, List<XElement> timelines)
+        {
+            string objectType;
+            foreach (var timeline in timelines)
+            {
+                // id:tä ei tarvi
+                // name, object_type, keyCount
+                output.Write(timeline.Attribute("name").Value);
+                GetAttributeString(timeline, "object_type", out objectType, "sprite");
+                output.Write(objectType);
+
+                var keys = timeline.Elements("key").ToList();
+                output.Write(keys.Count);
+                WriteTimelineKeys(output, keys, objectType);
+                // 
+            }
+        }
+
+        private void WriteTimelineKeys(ContentWriter output, List<XElement> keys, string objtype)
+        {
+            int temp;
+            string temps;
+            float tempf;
+            foreach (var key in keys)
+            {
+                // id:tä ei tarvi
+                // spin, time, curve_type, c1, c2, c3, c4, spin, 
+                GetAttributeInt32(key, "spin", out temp, 1);
+                output.Write(temp);
+                GetAttributeInt32(key, "time", out temp, 0);
+                output.Write(temp);
+                GetAttributeString(key, "curve_type", out temps, "linear");
+                output.Write(temps);
+                GetAttributeFloat(key, "c1", out tempf, 0f);
+                output.Write(tempf);
+                GetAttributeFloat(key, "c2", out tempf, 0f);
+                output.Write(tempf);
+                GetAttributeFloat(key, "c3", out tempf, 0f);
+                output.Write(tempf);
+                GetAttributeFloat(key, "c4", out tempf, 0f);
+                output.Write(tempf);
+
+                XElement obj = key.Element("bone");
+                if (obj == null) obj = key.Element("object");
+                WriteObject(output, obj, objtype);
+            }
+        }
+
+        private void WriteObject(ContentWriter output, XElement obj, string objtype)
+        {
+            // jos bone || object
+            
+            float tempf;
+            int tempi;
+            // objname, pivot_x, pivot_y, scale_x, scale_y, x, y, angle
+            output.Write(obj.Name.LocalName);
+            GetAttributeFloat(obj, "pivot_x", out tempf, 0f);
+            output.Write(tempf);
+            GetAttributeFloat(obj, "pivot_y", out tempf, (objtype == "bone") ? .5f : 1f);
+            output.Write(tempf);
+
+            GetAttributeFloat(obj, "scale_x", out tempf, 1f);
+            output.Write(tempf);
+            GetAttributeFloat(obj, "scale_y", out tempf, 1f);
+            output.Write(tempf);
+
+            GetAttributeFloat(obj, "x", out tempf, 0f);
+            output.Write(tempf);
+            GetAttributeFloat(obj, "y", out tempf, 0f);
+            output.Write(tempf);
+
+            GetAttributeFloat(obj, "angle", out tempf, 0f);
+            output.Write(tempf);
+
+            // jos object == folder, file, a
+            if (obj.Name.LocalName == "object")
+            {
+                if (objtype == "sprite")
+                {
+                    GetAttributeInt32(obj, "folder", out tempi, -1);
+                    output.Write(tempi);
+                    GetAttributeInt32(obj, "file", out tempi, -1);
+                    output.Write(tempi);
+                    GetAttributeFloat(obj, "a", out tempf, 1f);
+                    output.Write(tempf);
+                }
             }
         }
 
@@ -247,6 +338,7 @@ namespace SaNi.Spriter.Pipeline
             int tempi;
             foreach (var info in objInfos)
             {
+                // todo voiko olla null?
                 output.Write(info.Attribute("name").Value);
                 output.Write(info.Attribute("type").Value);
                 GetAttributeInt32(info, "w", out tempi);
