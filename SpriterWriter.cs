@@ -82,7 +82,73 @@ namespace SaNi.Spriter.Pipeline
             output.Write(entities.Count);
             
             WriteFolders(output, folders);
+            WriteEntities(output, entities);
         }
+
+        private void WriteEntities(ContentWriter output, List<XElement> entities)
+        {
+            foreach (var entity in entities)
+            {
+                
+                output.Write(entity.Attribute("name").Value);
+                var objInfos = entity.Elements("obj_info").ToList();
+                var charMaps = entity.Elements("character_map").ToList();
+                var animations = entity.Elements("animation").ToList();
+                // obj infojen määrä
+                output.Write(objInfos.Count);
+                // kirjota charmappejen määr
+                output.Write(charMaps.Count);
+                output.Write(animations.Count);
+
+                WriteObjectInfos(output, objInfos);
+                WriteCharacterMaps(output, charMaps);
+            }
+        }
+
+        private void WriteCharacterMaps(ContentWriter output, List<XElement> charMaps)
+        {
+            foreach (var charMap in charMaps)
+            {
+                output.Write(charMap.Attribute("name").Value);
+
+                var maps = charMap.Elements("map").ToList();
+                // kirjotetaan monta mappia
+                output.Write(maps.Count);
+                WriteMaps(output, maps);
+            }
+        }
+
+        private void WriteMaps(ContentWriter output, List<XElement> maps)
+        {
+            int tempi;
+            foreach (var map in maps)
+            {
+                GetAttributeInt32(map, "folder", out tempi, 0);
+                output.Write(tempi);
+                GetAttributeInt32(map, "file", out tempi, 0);
+                output.Write(tempi);
+                GetAttributeInt32(map, "target_folder", out tempi, -1);
+                output.Write(tempi);
+                GetAttributeInt32(map, "target_file", out tempi, -1);
+                output.Write(tempi);
+            }
+        }
+
+        private void WriteObjectInfos(ContentWriter output, List<XElement> objInfos)
+        {
+            int tempi;
+            foreach (var info in objInfos)
+            {
+                output.Write(info.Attribute("name").Value);
+                output.Write(info.Attribute("type").Value);
+                GetAttributeInt32(info, "w", out tempi);
+                output.Write(tempi);
+                GetAttributeInt32(info, "h", out tempi);
+                output.Write(tempi);
+            }
+        }
+
+        #region Folders and files
 
         private void WriteFolders(ContentWriter output, List<XElement> folders)
         {
@@ -115,5 +181,7 @@ namespace SaNi.Spriter.Pipeline
                 output.Write(tempf);
             }
         }
+
+        #endregion
     }
 }
