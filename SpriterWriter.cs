@@ -43,6 +43,18 @@ namespace SaNi.Spriter.Pipeline
             return false;
         }
 
+        private bool GetAttributeString(XElement e, string name, out string ret, string def)
+        {
+            if (e.Attribute(name) != null)
+            {
+                ret = e.Attribute(name).Value;
+                return true;
+            }
+            ret = def;
+            return false;
+
+        }
+
         #endregion
 
         /// <summary>
@@ -102,7 +114,102 @@ namespace SaNi.Spriter.Pipeline
 
                 WriteObjectInfos(output, objInfos);
                 WriteCharacterMaps(output, charMaps);
+                WriteAnimations(output, animations);
             }
+        }
+
+        private void WriteAnimations(ContentWriter output, List<XElement> animations)
+        {
+            int tempi;
+            bool tempb;
+            foreach (var animation in animations)
+            {
+                output.Write(animation.Attribute("name").Value);
+                GetAttributeInt32(animation, "length", out tempi, 0);
+                output.Write(tempi);
+                GetAttributeBoolean(animation, "looping", out tempb, true);
+                output.Write(tempb);
+
+                // yks mainline?
+                var mainlineKeys = animation.Element("mainline").Elements("key").ToList();
+                // monta timelineä w/ reference to mainline
+                var timelines = animation.Descendants("timeline").ToList();
+                
+                output.Write(mainlineKeys.Count);
+                output.Write(timelines.Count);
+
+                WriteMainlineKeys(output, mainlineKeys);
+
+            }
+        }
+
+        private void WriteMainlineKeys(ContentWriter output, List<XElement> mainlineKeys)
+        {
+            foreach (var mainlineKey in mainlineKeys)
+            {
+                WriteMainlineKey(output, mainlineKey);               
+            }
+        }
+
+        private void WriteMainlineKey(ContentWriter output, XElement key)
+        {
+            // time
+            int tempi;
+            string temps;
+            float tempf;
+            GetAttributeInt32(key, "time", out tempi, 0);
+            output.Write(tempi);
+            // objectCount, boneCount
+            var objectRefs = key.Elements("object_ref").ToList();
+            var boneRefs = key.Elements("bone_ref").ToList();
+            output.Write(objectRefs.Count);
+            output.Write(boneRefs.Count);
+            // curve_type
+            GetAttributeString(key, "curve_type", out temps, "linear");
+            output.Write(temps);
+            // c1, c2, c3, c4
+            GetAttributeFloat(key, "c1", out tempf, 0f);
+            output.Write(tempf);
+            GetAttributeFloat(key, "c2", out tempf, 0f);
+            output.Write(tempf);
+            GetAttributeFloat(key, "c3", out tempf, 0f);
+            output.Write(tempf);
+            GetAttributeFloat(key, "c4", out tempf, 0f);
+            output.Write(tempf);
+            // objectrefs, bonerefs
+            //WriteObjectRefs(output, objectRefs);
+            //WriteBoneRefs(output, boneRefs);
+        }
+
+        private void WriteBoneRefs(ContentWriter output, List<XElement> boneRefs)
+        {
+            int temp;
+            foreach (var boneRef in boneRefs)
+            {
+                GetAttributeInt32(boneRef, "parent", out temp, -1);
+                output.Write(temp);
+                GetAttributeInt32(boneRef, "timeline", out temp, 0);
+                output.Write(temp);
+                GetAttributeInt32(boneRef, "key", out temp, 0);
+                output.Write(temp);
+            }
+        }
+
+        private void WriteObjectRefs(ContentWriter output, List<XElement> objectRefs)
+        {
+            int temp;
+            foreach (var objectRef in objectRefs)
+            {
+                GetAttributeInt32(objectRef, "parent", out temp, -1);
+                output.Write(temp);
+                GetAttributeInt32(objectRef, "timeline", out temp, 0);
+                output.Write(temp);
+                GetAttributeInt32(objectRef, "key", out temp, 0);
+                output.Write(temp);
+                GetAttributeInt32(objectRef, "z_index", out temp, 0);
+                output.Write(temp);
+            }
+            
         }
 
         private void WriteCharacterMaps(ContentWriter output, List<XElement> charMaps)
@@ -145,6 +252,9 @@ namespace SaNi.Spriter.Pipeline
                 output.Write(tempi);
                 GetAttributeInt32(info, "h", out tempi);
                 output.Write(tempi);
+
+                // TODO pitääkö kirjottaa jotain muuta näistä? 
+                // pitää venata päivitettyä dokkaria
             }
         }
 
