@@ -176,9 +176,10 @@ namespace SaNi.Spriter.Pipeline
             output.Write(tempf);
             GetAttributeFloat(key, "c4", out tempf, 0f);
             output.Write(tempf);
-            // objectrefs, bonerefs
-            //WriteObjectRefs(output, objectRefs);
-            //WriteBoneRefs(output, boneRefs);
+            // bone, objectref
+            WriteBoneRefs(output, boneRefs);
+            WriteObjectRefs(output, objectRefs);
+            
         }
 
         private void WriteBoneRefs(ContentWriter output, List<XElement> boneRefs)
