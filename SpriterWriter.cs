@@ -7,7 +7,6 @@ using System.Xml.Linq;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
-using SaNi.Spriter.Data;
 
 namespace SaNi.Spriter.Pipeline
 {
@@ -357,7 +356,10 @@ namespace SaNi.Spriter.Pipeline
         {
             foreach (var folder in folders)
             {
-                output.Write(folder.Attribute("name").Value);
+                string temp;
+                // ei kaaduta jos folderilal ei oo nimeä
+                GetAttributeString(folder, "name", out temp, "");
+                output.Write(temp);
                 List<XElement> files = folder.Descendants("file").ToList();
                 // filujen määrä
                 output.Write(files.Count);

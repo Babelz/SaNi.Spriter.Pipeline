@@ -10,7 +10,5 @@ namespace SaNi.Spriter.Pipeline
     public class SpriterShadowData
     {
         public XDocument Document;
-        public List<List<Texture2DContent>> Textures;
-
     }
 }
